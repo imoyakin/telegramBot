@@ -1,0 +1,11 @@
+[package]
+name = "telegramBot"
+version = "0.1.0"
+authors = ["toko"]
+edition = "2018"
+
+[dependencies]
+telegram-bot = "*"
+futures = "*"
+tokio = "*"
+tokio-core = "*"
