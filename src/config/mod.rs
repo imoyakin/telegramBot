@@ -2,21 +2,21 @@ use std::fs;
 use serde::{Serialize, Deserialize};
 
 lazy_static!{
-    pub static ref conf:config = read_file("config.json".to_string());
+    pub static ref CONF:Config = read_file("config.json".to_string());
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct config {
-    pub AutoResp: Vec<atuo_resp>,
+pub struct Config {
+    pub auto_resp: Vec<AtuoResp>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct atuo_resp {
-    pub Key: String,
-    pub Value: Vec<String>,
+pub struct AtuoResp {
+    pub key: String,
+    pub value: Vec<String>,
 }
 
-fn read_file(filename:String) -> config {
+fn read_file(filename:String) -> Config {
     let contents = fs::read_to_string(filename)
         .expect("Something went wrong reading the file");
     serde_json::from_str(&contents).unwrap()
