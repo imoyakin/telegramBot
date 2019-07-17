@@ -1,8 +1,6 @@
-use telegram_bot::*;
-use futures::*;
+use telegram_bot::{CanReplySendMessage, MessageKind, UpdateKind};
 use std::cell::RefCell;
 use std::rc::Rc;
-use regex::Regex;
 
 use super::config;
 

@@ -9,7 +9,7 @@ use std::env;
 use futures::Stream;
 use tokio_core::reactor::Core;
 use telegram_bot::*;
-use serde::{Serialize, Deserialize};
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -17,7 +17,7 @@ mod config;
 mod handle;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let _args: Vec<String> = env::args().collect();
     // println!("{}",config::conf.AutoResp.Key);
 
     let mut core = Core::new().unwrap();
