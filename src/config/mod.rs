@@ -1,23 +1,15 @@
 use std::fs;
-use regex::Regex;
+use regex::RegexSet;
 use serde::{Serialize, Deserialize};
 
 lazy_static!{
     pub static ref CONF:Config = read_file("config.json".to_string());
-    pub static ref RE:Regex = {
-        let mut re = r"(?x)".to_string();
-        re += "\n";
-        let len = CONF.auto_resp.len();
-        let mut j = 0usize;
+    pub static ref RE:RegexSet = {
+        let mut re = vec![];
         for i in &CONF.auto_resp {
-            re = re + &format!(r"{}{}{}{}", "(", i.key, ")","\n");
-            j  = j + 1;
-            if j < len {
-                re = re + "-" + "\n";
-            }
+            re.push(format!(r"{}", i.key))
         }
-        println!("{}", re);
-        Regex::new(&re).unwrap()
+        RegexSet::new(&re).unwrap()
     };
 }
 
