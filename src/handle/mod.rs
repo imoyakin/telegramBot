@@ -16,7 +16,7 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 matches.reserve(matches.len());
                 let mut i = 0usize;
                 for j in &config::CONF.auto_resp {
-                    if i == matches.pop().unwrap() {
+                    if i == matches.pop().unwrap_or(0usize) {
                         ret += &j.value[0];
                     }
                     i = i + 1;
