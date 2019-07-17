@@ -14,11 +14,12 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 let mut ret = "".to_string();
 
                 matches.reserve(matches.len());
-                let mut i = 0;
+                let mut i = 0usize;
                 for j in &config::CONF.auto_resp {
                     if i == matches.pop().unwrap() {
                         ret += &j.value[0];
                     }
+                    i = i + 1;
                 }
                 
                 // for i in &config::CONF.auto_resp {
