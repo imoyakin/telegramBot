@@ -9,6 +9,7 @@ lazy_static!{
         for i in &CONF.auto_resp {
             re += &format!(r"{}{}{}{}{}{}", "(", i.key, ")","\r", "-","\r");
         }
+        println!("{}", re);
         Regex::new(&re).unwrap()
     };
 }
