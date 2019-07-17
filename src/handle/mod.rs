@@ -12,8 +12,16 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
 
                 let mut matches:Vec<_> = config::RE.matches(data).into_iter().collect::<Vec<usize>>();
                 let mut ret = "".to_string();
+                for i in &matches {
+                    print!("-{}",i);
+                }
+                
 
                 matches.reserve(matches.len());
+
+                for i in &matches {
+                    print!("-{}",i);
+                }
                 let mut i = 0usize;
                 for j in &config::CONF.auto_resp {
                     if i == matches.pop().unwrap_or(0usize) {
@@ -30,7 +38,7 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 // }
                 // Answer message with "Hi".
                 api.borrow_mut().spawn(message.text_reply(
-                    format!("Hi, {}! You just wrote '{}'", &message.from.first_name, ret)
+                    format!("{}:{}", &message.from.first_name, ret)
                 ));
         }
     }

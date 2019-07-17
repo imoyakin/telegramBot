@@ -7,7 +7,7 @@ lazy_static!{
     pub static ref RE:RegexSet = {
         let mut re = vec![];
         for i in &CONF.auto_resp {
-            re.push(format!(r"{}", i.key))
+            re.push(format!(r#"{}"#, i.key))
         }
         RegexSet::new(&re).unwrap()
     };
