@@ -16,8 +16,8 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 let mut ret = "".to_string();
                 for i in &config::CONF.auto_resp {
                     match caps.name(&i.key) {
-                        Option::Some(_)=>ret += &i.value[0].clone(),
-                        Option::None=>(),
+                        Some(_)=>ret += &i.value[0].clone(),
+                        _ => ret += "what are you saying",
                     }
                 }
                 // Answer message with "Hi".
