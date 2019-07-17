@@ -1,8 +1,16 @@
 use std::fs;
+use regex::Regex;
 use serde::{Serialize, Deserialize};
 
 lazy_static!{
     pub static ref CONF:Config = read_file("config.json".to_string());
+    pub static ref RE:Regex = {
+        let mut re = "(?x)\r".to_string();
+        for i in &CONF.auto_resp {
+            re += &format!(r"{}{}{}{}{}{}", "(", i.key, ")","\r", "-","\r");
+        }
+        Regex::new(&re).unwrap()
+    };
 }
 
 #[derive(Serialize, Deserialize, Debug)]

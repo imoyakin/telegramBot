@@ -12,15 +12,17 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 // Print received text message to stdout.
                 println!("<{}>: {}", &message.from.first_name, data);
 
-                let conf : &config::Config = &config::CONF;
-                for i in &conf.auto_resp {
-                    println!("{}", i.key);
+                let caps = config::RE.captures(data).unwrap();
+                let mut ret = "".to_string();
+                for i in &config::CONF.auto_resp {
+                    match caps.name(&i.key) {
+                        Option::Some(_)=>ret += &i.value[0].clone(),
+                        Option::None=>(),
+                    }
                 }
-                let re = Regex::new(r"").unwrap();
-                re.captures(data).unwrap();
                 // Answer message with "Hi".
                 api.borrow_mut().spawn(message.text_reply(
-                    format!("Hi, {}! You just wrote '{}'", &message.from.first_name, data)
+                    format!("Hi, {}! You just wrote '{}'", &message.from.first_name, ret)
                 ));
         }
     }
