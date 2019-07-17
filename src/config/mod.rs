@@ -5,9 +5,16 @@ use serde::{Serialize, Deserialize};
 lazy_static!{
     pub static ref CONF:Config = read_file("config.json".to_string());
     pub static ref RE:Regex = {
-        let mut re = r"(?x)\n".to_string();
+        let mut re = r"(?x)".to_string();
+        re += "\n";
+        let len = CONF.auto_resp.len();
+        let mut j = 0usize;
         for i in &CONF.auto_resp {
-            re = re + &format!(r"{}{}{}{}{}{}", "(", i.key, ")","\n", "-","\n");
+            re = re + &format!(r"{}{}{}{}", "(", i.key, ")","\n");
+            j  = j + 1;
+            if j < len {
+                re = re + "-" + "\n";
+            }
         }
         println!("{}", re);
         Regex::new(&re).unwrap()
