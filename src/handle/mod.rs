@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 use telegram_bot::{CanReplySendMessage, MessageKind, UpdateKind};
+use rand::prelude::*;
 
 use super::config;
 
@@ -28,7 +29,9 @@ pub fn handle(
                 let mut i = 0usize;
                 for j in &config::CONF.auto_resp {
                     if &i == matches.get(0usize).unwrap_or(&0usize) {
-                        ret += &j.value[0];
+                        let mut rng = thread_rng();
+                        let roll = rng.gen_range(0, j.num);
+                        ret += &j.value[roll];
                         matches.pop();
                     }
                     i = i + 1;
