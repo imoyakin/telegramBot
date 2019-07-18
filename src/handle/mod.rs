@@ -11,21 +11,19 @@ pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -
                 println!("<{}>: {}", &message.from.first_name, data);
 
                 let mut matches:Vec<_> = config::RE.matches(data).into_iter().collect::<Vec<usize>>();
-                let mut ret = "".to_string();
-                for i in &matches {
-                    print!("-{}",i);
-                }
-                
+                let mut ret = "".to_string();  
+
+                if  matches.len() == 0 {
+                    return Ok(())
+                }      
 
                 matches.reserve(matches.len());
 
-                for i in &matches {
-                    print!("-{}",i);
-                }
                 let mut i = 0usize;
                 for j in &config::CONF.auto_resp {
-                    if i == matches.pop().unwrap_or(0usize) {
+                    if &i == matches.get(0usize).unwrap_or(&0usize) {
                         ret += &j.value[0];
+                        matches.pop();
                     }
                     i = i + 1;
                 }
