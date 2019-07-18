@@ -27,8 +27,10 @@ pub struct Config {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AtuoResp {
     pub key: String,
+
     pub value: Vec<String>,
-    #[serde(skip_serializing)]
+
+    #[serde(skip_deserializing)]
     pub num:usize,
 }
 
