@@ -41,6 +41,10 @@ pub fn handle(
                     .spawn(message.text_reply(format!("{}", ret)));
             }
         }
+        UpdateKind::CallbackQuery(callback) => {
+            println!{"{}", callback.data}
+            println!{"{}", callback.chat_instance}
+        }
         _ => {}
     };
 
