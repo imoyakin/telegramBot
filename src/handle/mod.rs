@@ -10,7 +10,10 @@ pub fn handle(
     api: Rc<RefCell<telegram_bot::Api>>,
 ) -> Result<(), telegram_bot::Error> {
     match update.kind {
-        UpdateKind::ChannelPost(_) => {
+        UpdateKind::ChannelPost(post) => {
+            if let MessageKind::Text{ref data, ..} = post.kind {
+                println!{"{}", data};
+            };
         }
         UpdateKind::Message(message) => {
             if let MessageKind::Text { ref data, .. } = message.kind {
