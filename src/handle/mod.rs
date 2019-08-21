@@ -16,9 +16,17 @@ pub fn handle(
             };
         }
         UpdateKind::Message(message) => {
-            if let MessageKind::Text { ref data, .. } = message.kind {
+            if let MessageKind::Text { ref data, ref entities} = message.kind {
                 // Print received text message to stdout.
                 //println!("<{}>: {}", &message.from.first_name, data);
+                
+                for x in entities.iter() {
+                    match x {
+                        Mention => println!("has been metion"),
+                        BotCommand => println!("bot BotCommand"),
+                        _ => println!("unkown"),
+                    };
+                }
 
                 let mut matches: Vec<_> =
                     config::RE.matches(data).into_iter().collect::<Vec<usize>>();
