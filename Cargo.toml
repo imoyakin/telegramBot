@@ -5,10 +5,12 @@ authors = ["toko"]
 edition = "2018"
 
 [dependencies]
-telegram-bot = "*"
-futures = "*"
-tokio = "*"
-tokio-core = "*"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-lazy_static = "*"
+log = "0.4.8"
+pretty_env_logger = "0.4.0"
+tokio = { version =  "0.2.11", features = ["rt-threaded", "macros"] }
+teloxide = { path = "../../" }
+
+# Used to setup a webhook
+warp = "0.2.2"
+reqwest = "0.10.4"
+serde_json = "1.0.50"
