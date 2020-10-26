@@ -1,10 +1,20 @@
-use teloxide::{dispatching::update_listeners, prelude::*};
-	
-use std::{convert::Infallible, net::SocketAddr};
-use tokio::sync::mpsc;
+use rand::Rng;
+use reqwest::StatusCode;
+use std::time::Duration;
+use std::{convert::Infallible, env, net::SocketAddr};
+use teloxide::{
+    dispatching::update_listeners,
+    prelude::*,
+    types::{
+        CallbackQuery, ChatId, ChatOrInlineMessage, InlineKeyboardButton, InlineKeyboardMarkup,
+    },
+    utils::command::BotCommand,
+};
+use tokio::{sync::mpsc, time::delay_for};
+use tokio_postgres::NoTls;
 use warp::Filter;
 
-use reqwest::StatusCode;
+mod handle;
 
 #[tokio::main]
 async fn main() {
@@ -30,7 +40,8 @@ pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infa
         .and(warp::body::json())
         .map(move |json: serde_json::Value| {
             if let Ok(update) = Update::try_parse(&json) {
-                tx.send(Ok(update)).expect("Cannot send an incoming update from the webhook")
+                tx.send(Ok(update))
+                    .expect("Cannot send an incoming update from the webhook")
             }
 
             StatusCode::OK
@@ -42,9 +53,11 @@ pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infa
     // You might want to use serve.key_path/serve.cert_path methods here to
     // setup a self-signed TLS certificate.
 
-    tokio::spawn(serve.run("127.0.0.1:80".parse::<SocketAddr>().unwrap()));
+    tokio::spawn(serve.run("0.0.0.0:80".parse::<SocketAddr>().unwrap()));
     rx
 }
+
+async fn handle_callback(cx: UpdateWithCx<CallbackQuery>) {}
 
 async fn run() {
     teloxide::enable_logging!();
@@ -52,26 +65,20 @@ async fn run() {
 
     let bot = Bot::from_env();
 
-    teloxide::repl(bot, |message| async move {
-        message.answer_dice().send().await?;
-        ResponseResult::<()>::Ok(())
-    })
-    .await;
-
-    // let args: Vec<String> = env::args().collect();
-    // // println!("{}",config::conf.AutoResp.Key);
-
-    // let mut core = Core::new().unwrap();
-
-    // let token = env::var("TELEGRAM_BOT_TOKEN").unwrap();
-    // let api = Api::configure(token).build(core.handle()).unwrap();
-
-    // let api_call = Rc::new(RefCell::new(api));
-
-    // // Fetch new updates via long poll method
-    // let future = api_call.try_borrow().unwrap().stream().for_each(|update|{
-    //     handle::handle(update,api_call.clone())
-    // });
-
-    // core.run(future).unwrap();
+    Dispatcher::new(bot.clone())
+        .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+            rx.for_each_concurrent(None, |message| async move {
+                handle::handle_message(message)
+                    .await
+                    .expect("Something wrong with the bot!");
+            })
+        })
+        .callback_queries_handler(|rx: DispatcherHandlerRx<CallbackQuery>| {
+            rx.for_each_concurrent(None, |cx| async move { handle_callback(cx).await })
+        })
+        .dispatch_with_listener(
+            webhook(bot).await,
+            LoggingErrorHandler::with_custom_text(""),
+        )
+        .await;
 }

@@ -1,19 +1,29 @@
-use telegram_bot::*;
-use futures::*;
-use std::cell::RefCell;
-use std::rc::Rc;
+use teloxide::{utils::command::BotCommand, prelude::*};
 
-pub fn handle(update:telegram_bot::Update, api:Rc<RefCell<telegram_bot::Api>>) -> Result<(),telegram_bot::Error>{
-    if let UpdateKind::Message(message) = update.kind {
-        if let MessageKind::Text {ref data, ..} = message.kind {
-                // Print received text message to stdout.
-                println!("<{}>: {}", &message.from.first_name, data);
-                // Answer message with "Hi".
-                api.borrow_mut().spawn(message.text_reply(
-                    format!("Hi, {}! You just wrote '{}'", &message.from.first_name, data)
-                ));
+#[derive(BotCommand)]
+#[command(rename = "lowercase", description = "These commands are supported:")]
+enum Command {
+    #[command(description = "display this text.")]
+    Help,
+    // #[command(description = "handle a username.")]
+    // Username(String),
+    // #[command(description = "handle a username and an age.", parse_with = "split")]
+    // UsernameAndAge { username: String, age: u8 },
+}
+
+pub async fn handle_message(cx: UpdateWithCx<Message>) -> ResponseResult<Message> {
+    match cx.update.text() {
+        None => cx.answer_str("text").await,
+        Some(text) => {
+            if let Ok(command) = Command::parse(text, "") {
+                match command {
+                    Command::Help => cx.answer_str(Command::descriptions()).await,
+                }
+            } else {
+                cx.reply_to("balabalabala")
+                .send()
+                .await
+            }
         }
     }
-
-    Ok(())
 }
