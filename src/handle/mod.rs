@@ -13,8 +13,12 @@ enum Command {
 
 pub async fn handle_message(cx: UpdateWithCx<Message>) -> ResponseResult<Message> {
     match cx.update.text() {
-        None => cx.answer_str("text").await,
+        None => {
+            log::debug!("archive messages_handler");
+            cx.answer_str("text").await
+        },
         Some(text) => {
+            log::debug!("archive command");
             if let Ok(command) = Command::parse(text, "") {
                 match command {
                     Command::Help => cx.answer_str(Command::descriptions()).await,

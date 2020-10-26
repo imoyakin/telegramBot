@@ -57,7 +57,9 @@ pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infa
     rx
 }
 
-async fn handle_callback(cx: UpdateWithCx<CallbackQuery>) {}
+async fn handle_callback(cx: UpdateWithCx<CallbackQuery>) {
+    log::debug!("archive handle_callback unwrite func");
+}
 
 async fn run() {
     teloxide::enable_logging!();
@@ -67,6 +69,7 @@ async fn run() {
 
     Dispatcher::new(bot.clone())
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
+            log::debug!("archive messages_handler");
             rx.for_each_concurrent(None, |message| async move {
                 handle::handle_message(message)
                     .await
@@ -74,7 +77,10 @@ async fn run() {
             })
         })
         .callback_queries_handler(|rx: DispatcherHandlerRx<CallbackQuery>| {
-            rx.for_each_concurrent(None, |cx| async move { handle_callback(cx).await })
+            log::debug!("archive callback_queries_handler A");
+            rx.for_each_concurrent(None, |cx| async move { 
+                handle_callback(cx).await 
+            })
         })
         .dispatch_with_listener(
             webhook(bot).await,
