@@ -60,14 +60,14 @@ pub async fn webhook2<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Inf
 pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infallible> {
     // Heroku defines auto defines a port value
     let teloxide_token = env::var("TELOXIDE_TOKEN").expect("TELOXIDE_TOKEN env variable missing");
-    // let port: u16 = env::var("PORT")
-    //    .expect("PORT env variable missing")
-    //    .parse()
-    //    .expect("PORT value to be integer");
+    let port: u16 = env::var("PORT")
+       .expect("PORT env variable missing")
+       .parse()
+       .expect("PORT value to be integer");
     // Heroku host example .: "heroku-ping-pong-bot.herokuapp.com"
-    // let host = env::var("HOST").expect("have HOST env variable");
-    // let path = format!("bot{}", teloxide_token);
-    // let url = format!("https://{}/{}", host, path);
+    let host = env::var("HOST").expect("have HOST env variable");
+    let path = format!("bot{}", teloxide_token);
+    let url = format!("https://{}/{}", host, path);
  
     bot.set_webhook(url)
        .send()
@@ -104,7 +104,7 @@ pub async fn webhook<'a>(bot: Bot) -> impl update_listeners::UpdateListener<Infa
  
     let serve = warp::serve(server);
  
-    let address = format!("0.0.0.0:80");
+    let address = format!("0.0.0.0:{}", port);
     tokio::spawn(serve.run(address.parse::<SocketAddr>().unwrap()));
     rx
  }
