@@ -13,6 +13,8 @@ use teloxide::{
 use tokio::{sync::mpsc, time::delay_for};
 use tokio_postgres::NoTls;
 use warp::Filter;
+use teloxide::types::*;
+use teloxide::prelude::*;
 
 mod database;
 mod handle;
@@ -136,6 +138,36 @@ async fn run() {
     }
 
     Dispatcher::new(bot.clone())
+        .inline_queries_handler(|rx: DispatcherHandlerRx<InlineQuery>| {
+            rx.for_each(|message| async move {
+                let stickers = [
+                    "CAACAgIAAxkBAAMxXmdY_Ssn6E61-907MMNfVZIFd5oAAiMAA3lx3hbatLjZRpEzkRgE",
+                    "CAACAgIAAxkBAAM1XmdaZcMlEDa-75LVKWwEEVeDLRkAAqAAA6tXxAtpwuGr-UylexgE",
+                    "CAACAgIAAxkBAAM3Xmda0Kc4utK7UbfabZy0kVFC1pQAAvUAA3tOKhBCNQABQEpab2YYBA",
+                ];
+                message
+                    .bot
+                    .answer_inline_query(
+                        message.update.id.clone(),
+                        stickers
+                            .iter()
+                            .enumerate()
+                            .map(|(i, x)| {
+                                InlineQueryResult::CachedSticker(
+                                    InlineQueryResultCachedSticker::new(
+                                       format!("5364356453645365345633456346543{}", i),  
+                                       (*x).to_string()
+                                ))
+                            })
+                            .collect::<Vec<InlineQueryResult>>(),
+                    )
+                    .send()
+                    .await
+                    .log_on_error()
+                    .await;
+                log::info!("inline: {:?}", message.update);
+            })
+        })
         .messages_handler(|rx: DispatcherHandlerRx<Message>| {
             log::debug!("archive messages_handler");
             rx.for_each_concurrent(None, |message| async move {

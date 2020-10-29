@@ -15,3 +15,5 @@ pub async fn query_erotic() -> Option<String> {
         _ => None,
     }
 }
+
+//select * from erotic order by random() limit 1
