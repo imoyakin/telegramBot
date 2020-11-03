@@ -6,9 +6,7 @@ pub async fn query_erotic() -> Option<String> {
     let client = DB.get().unwrap();
 
     let res = client.
-    query_one("SELECT * FROM erotic 
-        WHERE ID >= ((SELECT MAX(ID) FROM erotic)-(SELECT MIN(ID) FROM erotic)) * RAND() + 
-        (SELECT MIN(ID) FROM erotic)  LIMIT 1", &[]).await;
+    query_one("select * from erotic order by random() limit 1", &[]).await;
 
     match res {
         Ok(data) => Some(data.get(0)),

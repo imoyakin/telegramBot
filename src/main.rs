@@ -140,24 +140,32 @@ async fn run() {
     Dispatcher::new(bot.clone())
         .inline_queries_handler(|rx: DispatcherHandlerRx<InlineQuery>| {
             rx.for_each(|message| async move {
-                let stickers = [
-                    "CAACAgIAAxkBAAMxXmdY_Ssn6E61-907MMNfVZIFd5oAAiMAA3lx3hbatLjZRpEzkRgE",
-                    "CAACAgIAAxkBAAM1XmdaZcMlEDa-75LVKWwEEVeDLRkAAqAAA6tXxAtpwuGr-UylexgE",
-                    "CAACAgIAAxkBAAM3Xmda0Kc4utK7UbfabZy0kVFC1pQAAvUAA3tOKhBCNQABQEpab2YYBA",
+                let photo = [
+                    "AgADAQADQakxG03uEUXL8miDe_Bu1mkHc0oXAAMBAAMCAAN5AAMuPAACFgQ",
                 ];
                 message
                     .bot
                     .answer_inline_query(
                         message.update.id.clone(),
-                        stickers
+                        photo
                             .iter()
                             .enumerate()
                             .map(|(i, x)| {
-                                InlineQueryResult::CachedSticker(
-                                    InlineQueryResultCachedSticker::new(
-                                       format!("5364356453645365345633456346543{}", i),  
-                                       (*x).to_string()
-                                ))
+                                let mut cp = InlineQueryResultCachedPhoto::new(
+                                    "id", 
+                                    (*x).to_string()
+                                );
+                                //cp.title("val");
+                                // InlineQueryResult::CachedSticker(
+                                //     InlineQueryResultCachedSticker::new(
+                                //        format!("5364356453645365345633456346543{}", i),  
+                                //        (*x).to_string()
+                                // ))
+                                
+                                cp = cp.title("fubuki!");
+                                InlineQueryResult::CachedPhoto(
+                                    cp
+                                )
                             })
                             .collect::<Vec<InlineQueryResult>>(),
                     )
